@@ -58,19 +58,6 @@ object db {
         write("./src/data/db.ser")
     }
 
-    def getCategory(name: String): Category = {
-        var category: Category = null
-        breakable {
-            for (c <- instance.categories) {
-                if (c.name == name) {
-                    category = c
-                    break()
-                }
-            }
-        }
-        category
-    }
-
     def getIngredient(name: String): Ingredient = {
         var ingredient: Ingredient = null
         breakable {
@@ -82,6 +69,32 @@ object db {
             }
         }
         ingredient
+    }
+
+    def editIngredient(name: String, newIngredient: Ingredient): Unit = {
+        breakable {
+            for (i <- instance.ingredients) {
+                if (i.name == name) {
+                    instance.ingredients = instance.ingredients - i + newIngredient
+                    break()
+                }
+            }
+        }
+        write("./src/data/db.ser")
+    }
+
+
+    def getCategory(name: String): Category = {
+        var category: Category = null
+        breakable {
+            for (c <- instance.categories) {
+                if (c.name == name) {
+                    category = c
+                    break()
+                }
+            }
+        }
+        category
     }
 
 }

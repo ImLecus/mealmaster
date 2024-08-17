@@ -1,2 +1,2 @@
 # mealmaster
-A terminal application written in Nim to generate weekly meal programs
+A terminal application written in Scala to generate weekly meal programs

@@ -6,5 +6,4 @@ class Ingredient(
                 val calories: Int,
                 val categories: CategoryMap
                 ) {
-
 }

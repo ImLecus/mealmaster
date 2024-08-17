@@ -5,5 +5,5 @@ class Ingredient(
                 val price: Float,
                 val calories: Int,
                 val categories: CategoryMap
-                ) {
+                ) extends Serializable {
 }

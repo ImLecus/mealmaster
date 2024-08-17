@@ -6,7 +6,6 @@ import scala.collection.mutable
 
 object db {
     private var instance: DataBase = _
-
     def init() : Unit = {
         val loadedDB = read("./src/data/db.ser")
         if(loadedDB == null){
@@ -23,7 +22,8 @@ object db {
                 ),
                 mutable.Set(),
                 mutable.ListBuffer(),
-                mutable.Set()
+                mutable.Set(),
+                new MealPlanner(PLANNER_MODE.WEEKLY,PRICE_LEVEL.MODERATE, CALORIES_LEVEL.MODERATE,0.8,0.8, null)
             )
             write("./src/data/db.ser")
             return
@@ -111,4 +111,25 @@ object db {
         meal
     }
 
+    def addMeal(meal: Meal): Unit = {
+        instance.meals += meal
+        write("./src/data/db.ser")
+    }
+
+    def editMeal(name: String, newMeal: Meal): Unit = {
+        write("./src/data/db.ser")
+    }
+
+
+    def getPlanner : MealPlanner = {
+        instance.planner
+    }
+
+    def getMeals: mutable.Set[Meal] = {
+        instance.meals
+    }
+
+    def getIngredients: mutable.Set[Ingredient] = {
+        instance.ingredients
+    }
 }

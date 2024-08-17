@@ -1,20 +1,10 @@
 import defs._
 import scala.util.control.Breaks._
 import scala.io.StdIn._
+import console._
 @main
 def main(): Unit = {
   db.init()
-
-  db.addIngredient( new Ingredient(
-    "Barra de pan",
-    0.4f,
-    12,
-    new CategoryMap(
-      List(db.getCategory("Carbohidratos")
-      ),
-      List(12)
-    )
-  ))
 
   breakable {
       while(true){
@@ -23,7 +13,7 @@ def main(): Unit = {
           var name = readInt()
           val action: Unit = name match {
             case 0 => break()
-            case 1 => {}
+            case 1 => console.createIngredient()
             case 2 => {}
             case 3 => {}
             case 4 => {}

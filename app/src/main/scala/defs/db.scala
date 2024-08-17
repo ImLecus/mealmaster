@@ -55,6 +55,7 @@ object db {
 
     def addIngredient(ingredient: Ingredient): Unit = {
         instance.ingredients += ingredient
+        write("./src/data/db.ser")
     }
 
     def getCategory(name: String): Category = {
@@ -68,6 +69,19 @@ object db {
             }
         }
         category
+    }
+
+    def getIngredient(name: String): Ingredient = {
+        var ingredient: Ingredient = null
+        breakable {
+            for (i <- instance.ingredients) {
+                if (i.name == name) {
+                    ingredient = i
+                    break()
+                }
+            }
+        }
+        ingredient
     }
 
 }

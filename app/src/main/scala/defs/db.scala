@@ -2,6 +2,7 @@ package defs
 
 import scala.util.control.Breaks._
 import java.io._
+import scala.collection.mutable
 
 object db {
     private var instance: DataBase = _
@@ -11,18 +12,18 @@ object db {
         if(loadedDB == null){
             // Create a new DataBase and save it
             instance = new DataBase(
-                Set(
-                    new Category("Carbohidratos"),
-                    new Category("Verduras"),
-                    new Category("Proteínas"),
-                    new Category("Legumbres"),
-                    new Category("Carne"),
-                    new Category("Pescado"),
-                    new Category("Otros")
+                mutable.Set(
+                    "Carbohidratos",
+                    "Verduras",
+                    "Proteínas",
+                    "Legumbres",
+                    "Carne",
+                    "Pescado",
+                    "Otros"
                 ),
-                Set(),
-                List(),
-                Set()
+                mutable.Set(),
+                mutable.ListBuffer(),
+                mutable.Set()
             )
             write("./src/data/db.ser")
             return
@@ -84,17 +85,30 @@ object db {
     }
 
 
-    def getCategory(name: String): Category = {
-        var category: Category = null
+    def getCategory(name: String): String = {
+        var category: String = ""
         breakable {
             for (c <- instance.categories) {
-                if (c.name == name) {
+                if (c == name) {
                     category = c
                     break()
                 }
             }
         }
         category
+    }
+
+    def getMeal(name: String): Meal = {
+        var meal: Meal = null
+        breakable {
+            for (m <- instance.meals) {
+                if(m.name == name){
+                    meal = m
+                    break();
+                }
+            }
+        }
+        meal
     }
 
 }

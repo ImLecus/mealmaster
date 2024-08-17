@@ -2,6 +2,7 @@ package console
 import defs._
 import scala.io.StdIn._
 import scala.util.control.Breaks._
+import scala.collection.mutable
 
 object console {
 
@@ -54,7 +55,7 @@ object console {
       }
     }
 
-    val i = new Ingredient(name,price,calories, new CategoryMap(List(),List()))
+    val i = new Ingredient(name,price,calories, mutable.Map() )
     db.addIngredient(i)
     println(s"Ingredient '$name' has been added successfully.\n")
   }
@@ -106,7 +107,43 @@ object console {
   }
 
   def createMeal(): Unit = {
+    print("Select the meal name: ")
+    val name = readLine()
 
+    val exists = db.getMeal(name)
+    if (exists != null) {
+      println("This meal already exists.")
+      return
+    }
+
+    val meal = new Meal(name, mutable.Map())
+
+    breakable {
+      while(true) {
+        print("Type the ingredient name (type 'done' to finish): ")
+        var ingredientName = readLine()
+        if(ingredientName == "done"){
+          break()
+        }
+        var ingredient = db.getIngredient(ingredientName)
+        if(ingredient == null){
+          println(s"The ingredient '$ingredientName' does not exist. Try again.")
+        }
+        else {
+          print("Type the ingredient amount: ")
+          var ingredientAmount = askFloat
+          if(ingredientAmount == 0){
+            println("The amount must be a number. Try again.")
+          }
+          else{
+            meal.ingredients(ingredient) = ingredientAmount
+            println(s"$ingredientName ($ingredientAmount) added to the ingredient list\n")
+          }
+        }
+      }
+    }
+
+    println(s"Meal '$name' has been added successfully.\n")
   }
 
   def editMeal(): Unit = {

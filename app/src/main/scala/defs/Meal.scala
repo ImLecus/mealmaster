@@ -1,6 +1,8 @@
 package defs
 
+import scala.collection.mutable
 class Meal (
-           val ingredients: List[Ingredient]
+           var name: String,
+           var ingredients: mutable.Map[Ingredient, Float]
            ) extends Serializable {
 }

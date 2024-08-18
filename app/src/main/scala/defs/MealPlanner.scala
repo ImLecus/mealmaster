@@ -14,20 +14,33 @@ class MealPlanner (
                   var balance: Float,
                   var previousResults: mutable.ListBuffer[Plan]
                   ) extends Serializable{
-    var meals : mutable.Set[Meal] = null
-    var average_calories = 0
-    var average_price = 0.0f
+    private var meals : mutable.Set[Meal] = null
+    private var categories: mutable.Set[String] = null
+    private var average_calories = 0
+    private var average_price = 0.0f
+    private var balanceSet = Map[String, Int]()
+    private var breakAverageCheck = false
 
     def run : Plan = {
       val size = meals.size
       val random = new Random()
       val plan = new Plan(new ListBuffer[Meal](), PLANNER_MODE.describe(), 0)
       val mealNumber = PLANNER_MODE.getMealNumber
+      val balanceTable = new BalanceTable(categories)
 
       var iteration = 0
+      var real_iteration = 0
       while(iteration < mealNumber){
         // Get a random meal
         val meal = getRandomMeal
+        real_iteration += 1
+        
+        if(real_iteration > 50){
+          // There are not enough results to complete the plan.
+          // This case breaks the infinite bucle by breaking the
+          // price and calories check.
+          breakAverageCheck = true
+        }
         // Check if the meal exists and has not been added
         breakable {
           if(plan.meals.contains(meal)){
@@ -36,7 +49,12 @@ class MealPlanner (
           if(!isPriceAccurate(meal) || !isCaloriesAccurate(meal)){
             break()
           }
+          if(iteration > 0 && !testBalance(meal, balanceTable.getBalanceRecommendation)){
+            println(s"Meal ${meal.name} did not pass the Balance test. Needed: ${balanceTable.getBalanceRecommendation}")
+            break()
+          }
 
+          balanceTable.addMeal(meal)
           plan.meals += meal
           plan.totalCalories += meal.getTotalCalories
           iteration += 1
@@ -47,6 +65,26 @@ class MealPlanner (
       plan
     }
 
+    private def testBalance(m: Meal, needs: String): Boolean = {
+      val random = new Random()
+      val prob = new Random().nextFloat()
+      if(prob <= balance){
+        var result = false
+        breakable {
+          for (i <- m.ingredients) {
+            for (category <- i._1.categories) {
+              if (category._1 == needs) {
+                result = true
+                break()
+              }
+            }
+          }
+        }
+        return result
+      }
+      true
+    }
+
     private def getRandomMeal: Meal = {
       val random = new Random()
       val prob = random.nextFloat * meals.size
@@ -54,6 +92,9 @@ class MealPlanner (
     }
 
     private def isPriceAccurate(m: Meal): Boolean = {
+        if(breakAverageCheck){
+          return true
+        }
         val price = PRICE_LEVEL match {
           case LOW =>
             m.getTotalPrice < average_price * 0.8
@@ -66,6 +107,9 @@ class MealPlanner (
     }
 
     private def isCaloriesAccurate(m: Meal): Boolean = {
+      if (breakAverageCheck) {
+        return true
+      }
       val price = CALORIES_LEVEL match {
         case defs.CALORIES_LEVEL.LOW =>
           m.getTotalCalories < average_calories * 0.8
@@ -77,7 +121,8 @@ class MealPlanner (
       price
     }
 
-    def initialize(m: mutable.Set[Meal]) : Unit = {
+    def initialize(m: mutable.Set[Meal], c: mutable.Set[String]) : Unit = {
+        categories = c
         meals = m
         val size = m.size
         for(element <- m){

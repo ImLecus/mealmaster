@@ -260,7 +260,7 @@ object console {
     if(response == 0){
       println("Creating meal plan...")
       db.getPlanner.PLANNER_MODE = planType
-      db.getPlanner.initialize(db.getMeals)
+      db.getPlanner.initialize(db.getMeals, db.getCategories)
       val plan = db.getPlanner.run
 
       println("Meal plan created!")

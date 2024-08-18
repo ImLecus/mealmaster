@@ -132,4 +132,8 @@ object db {
     def getIngredients: mutable.Set[Ingredient] = {
         instance.ingredients
     }
+
+    def getCategories: mutable.Set[String] = {
+        instance.categories
+    }
 }

@@ -1,9 +1,11 @@
 import defs._
 import scala.util.control.Breaks._
 import console._
+import gui._
 @main
 def main(): Unit = {
   db.init()
+
 
   breakable {
       while(true){

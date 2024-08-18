@@ -117,6 +117,7 @@ object db {
     }
 
     def editMeal(name: String, newMeal: Meal): Unit = {
+        
         write("./src/data/db.ser")
     }
 

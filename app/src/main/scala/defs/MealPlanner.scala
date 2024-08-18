@@ -33,28 +33,34 @@ class MealPlanner (
       while(iteration < mealNumber){
         // Get a random meal
         val meal = getRandomMeal
-        real_iteration += 1
         
-        if(real_iteration > 50){
+        real_iteration += 1
+        if(real_iteration > 50 && !breakAverageCheck){
           // There are not enough results to complete the plan.
           // This case breaks the infinite bucle by breaking the
           // price and calories check.
+          println("Warning! There are not enough meals to make a precise plan. \nPrice and calories check are now disabled.")
           breakAverageCheck = true
         }
-        // Check if the meal exists and has not been added
+        
+        
         breakable {
+          // Check if the meal exists and has not been added on the same plan
           if(plan.meals.contains(meal)){
             println(s"The meal ${meal.name} has been already added to the plan")
           }
+          // Price and calories check, disabled if breakAverageCheck = true
           if(!isPriceAccurate(meal) || !isCaloriesAccurate(meal)){
             break()
           }
+          // Balance test
           if(iteration > 0 && !testBalance(meal, balanceTable.getBalanceRecommendation)){
             println(s"Meal ${meal.name} did not pass the Balance test. Needed: ${balanceTable.getBalanceRecommendation}")
             break()
           }
-
           balanceTable.addMeal(meal)
+          // Originality test
+          
           plan.meals += meal
           plan.totalCalories += meal.getTotalCalories
           iteration += 1
